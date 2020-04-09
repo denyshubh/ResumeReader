@@ -36,8 +36,8 @@ class App extends Component {
   }
   maxSelectFile = (event) => {
     let files = event.target.files
-    if (files.length > 3) {
-      const msg = 'Only 3 images can be uploaded at a time'
+    if (files.length > 1) {
+      const msg = 'Only 1 images can be uploaded at a time'
       event.target.value = null
       toast.warn(msg)
       return false;
@@ -94,20 +94,20 @@ class App extends Component {
 
   render() {
     return (
-      <div class="container">
-        <div class="row">
-          <div class="offset-md-3 col-md-6">
-            <div class="form-group files">
+      <div className="container">
+        <div className="row">
+          <div className="offset-md-3 col-md-6">
+            <div className="form-group files">
               <label>Upload Your File </label>
-              <input type="file" class="form-control" multiple onChange={this.onChangeHandler} />
+              <input type="file" className="form-control" multiple onChange={this.onChangeHandler} />
             </div>
-            <div class="form-group">
+            <div className="form-group">
               <ToastContainer />
               <Progress max="100" color="success" value={this.state.loaded} >{Math.round(this.state.loaded, 2)}%</Progress>
 
             </div>
 
-            <button type="button" class="btn btn-success btn-block" onClick={this.onClickHandler}>Upload</button>
+            <button type="button" className="btn btn-success btn-block" onClick={this.onClickHandler}>Upload</button>
 
           </div>
         </div>
