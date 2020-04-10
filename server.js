@@ -105,8 +105,9 @@ const getSignedUrl = (file) => {
 
 app.get('/download', async (req, res) => {
   try {
-    console.log(`File received is ${req.query}`)
-    let file = req.query['fileName'][0]
+    console.log(`File received is ${req.query['fileName']}`)
+    // let file = req.query['fileName'][0]
+    let file = '1586436464153-shubham_singh_resume1.pdf'
     let data = await getResult(file);
     if (!data) {
       console.log('NO DATA FOUND IN DOCUMENTS TABLE Means Data is not uploaded to s3 or there is problem in the infrastructure. Need human validation');
@@ -121,7 +122,9 @@ app.get('/download', async (req, res) => {
       } else {
         let signedURLS = []
         for (let i = 0; i < files.length; i++) {
-          let file = files[i]['outputType'].split('');
+          console.log(files[i])
+          let file = files[i]['outputType']['S'].split('-');
+          console.log(file)
           switch (file[2]) {
             case 'Text':
               console.log('do something with Text File')
@@ -131,7 +134,8 @@ app.get('/download', async (req, res) => {
               break;
             case 'EntityText':
               // console.log('do something with Entity File')
-              let url = getSignedUrl(files[i]['outputPath'])
+              let url = getSignedUrl(files[i]['outputPath']['S'])
+              console.log(url)
               signedURLS.push(url)
               break;
             case 'Forms':
@@ -144,7 +148,7 @@ app.get('/download', async (req, res) => {
               console.log('do something with Tables')
               break;
             default:
-              console.log('Something Went Wrong!!!')
+              console.log('Response file is received!')
 
           }
         }

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Progress } from 'reactstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+const FileDownload = require('js-file-download');
 class App extends Component {
   constructor(props) {
     super(props);
@@ -11,7 +12,7 @@ class App extends Component {
       loaded: 0,
       download: 0,
       disableUploadButton: false,
-      disableDownloadButton: true
+      disableDownloadButton: false
     }
 
   }
@@ -112,11 +113,13 @@ class App extends Component {
     try {
       axios.get("http://localhost:8000/download", {
         params: {
-          fileName: selectedFile
+          fileName: 'selectedFile'
         }
       })
         .then(res => { // then print response status
-          axios.get(res.urls[0], {
+          let downloadUrl = 'https://cors-anywhere.herokuapp.com/' + res.data.urls[0]
+          axios.get(downloadUrl, {
+            crossDomain: true,
             onDownloadProgress: ProgressEvent => {
               this.setState({
                 download: (ProgressEvent.loaded / ProgressEvent.total * 100),
@@ -124,6 +127,7 @@ class App extends Component {
             },
           })
             .then(res => { // then print response status
+              FileDownload(res.data, 'resume.txt');
               toast.success('Download Complete!')
             })
             .catch(err => { // then print response status
