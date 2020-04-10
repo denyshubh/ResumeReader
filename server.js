@@ -19,17 +19,18 @@ const dynamodb = new aws.DynamoDB();
 const outTable = 'awscdk-OutputTable875D8E18-1NM637OBRWUKY'
 const docTable = 'awscdk-DocumentsTable7E808EE5-1REOV6ARFO9LQ'
 const BUCKET = 'awscdk-documentsbucket9ec9deb9-1u4iiltwuvyj4'
+
 app.use(bodyParser.json());
 app.use(cors())
-let FILE_NAME = "";
+
 const upload = multer({
   storage: multerS3({
     s3: s3,
     acl: 'public-read',
-    bucket: BUCKET,
+    bucket: 'awscdk-documentsbucket9ec9deb9-1u4iiltwuvyj4',
     key: function (req, file, cb) {
-      FILE_NAME = file.originalname
-      cb(null, FILE_NAME);
+      console.log(file);
+      cb(null, file.originalname);
     }
   })
 }).array('file');
