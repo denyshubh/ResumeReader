@@ -56,7 +56,7 @@ class App extends Component {
         err[x] = files[x].type + 'is too large, please pick a smaller file\n';
       }
     };
-    for (var z = 0; z < err.length; z++) {// if message not same old that mean has error 
+    for (let z = 0; z < err.length; z++) {// if message not same old that mean has error 
       // discard selected file
       toast.error(err[z])
       event.target.value = null
@@ -64,22 +64,22 @@ class App extends Component {
     return true;
   }
   onChangeHandler = event => {
-    let files = event.target.files
+    var files = event.target.files
     console.log(files)
     if (this.maxSelectFile(event) && this.checkMimeType(event) && this.checkFileSize(event)) {
       // if return true allow to setState
       this.setState({
         selectedFile: files,
-        loaded: 0,
+        loaded: 0
       })
     }
   }
   onClickHandler = () => {
+
     try {
       const data = new FormData()
       for (let x = 0; x < this.state.selectedFile.length; x++) {
-        let file = Date.now() + '-' + this.state.selectedFile[x]
-        data.append('file', file)
+        data.append('file', this.state.selectedFile[x])
       }
       axios.post("http://localhost:8000/upload", data, {
         onUploadProgress: ProgressEvent => {
@@ -94,6 +94,7 @@ class App extends Component {
         .catch(err => { // then print response status
           toast.error('Upload Failed!')
         })
+
       this.setState({
         disableDownloadButton: false
       })
