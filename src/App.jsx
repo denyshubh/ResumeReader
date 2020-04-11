@@ -126,8 +126,9 @@ class App extends Component {
               })
             },
           })
-            .then(res => { // then print response status
-              FileDownload(res.data, 'resume.txt');
+            .then(response => { // then print response status
+              let data = JSON.stringify(response.data['Entities'])
+              FileDownload(data, 'resume.txt');
               toast.success('Download Complete!')
             })
             .catch(err => { // then print response status
