@@ -12,7 +12,8 @@ class App extends Component {
       loaded: 0,
       download: 0,
       disableUploadButton: false,
-      disableDownloadButton: false
+      disableDownloadButton: true,
+      uploadedFile: null,
     }
 
   }
@@ -90,15 +91,15 @@ class App extends Component {
         },
       })
         .then(res => { // then print response status
+          this.setState({
+            uploadedFile: res.data,
+            disableDownloadButton: false
+          })
           toast.success('Upload Success!')
         })
         .catch(err => { // then print response status
           toast.error('Upload Failed!')
         })
-
-      this.setState({
-        disableDownloadButton: false
-      })
     } catch (err) {
       toast.warn('Please Upload Your Resume')
     }
@@ -109,11 +110,12 @@ class App extends Component {
       disableUploadButton: true,
       disableDownloadButton: true
     })
-    let selectedFile = this.state.selectedFile
+    let file = this.state.uploadedFile
     try {
+      if (!file) throw Error('INVALID_INPUT');
       axios.get("http://localhost:8000/download", {
         params: {
-          fileName: 'selectedFile'
+          fileName: file
         }
       })
         .then(res => { // then print response status
@@ -128,7 +130,8 @@ class App extends Component {
           })
             .then(response => { // then print response status
               let data = JSON.stringify(response.data['Entities'])
-              FileDownload(data, 'resume.txt');
+              let saveFileName = `${Date.now()}-${file}`
+              FileDownload(data, saveFileName);
               toast.success('Download Complete!')
             })
             .catch(err => { // then print response status
@@ -144,15 +147,17 @@ class App extends Component {
         disableUploadButton: false
       })
     } catch (e) {
-      console.log('Please Upload The File First!!!')
+      console.log(e)
+      toast.error('Please Upload The File First!!!')
     }
 
   }
+
   render() {
     let { loaded, download, disableUploadButton, disableDownloadButton } = this.state
     console.log(disableDownloadButton, disableUploadButton, loaded, download)
     return (
-      <div className="container">
+      <main className="container">
         <div className="row jumbotron">
           <div className="offset-md-3 col-md-6">
             <div className="form-group files">
@@ -176,7 +181,7 @@ class App extends Component {
             <Progress max="100" color="info" value={download} >{Math.round(download, 2)}%</Progress>
           </div>
         </div>
-      </div>
+      </main>
     );
   }
 }

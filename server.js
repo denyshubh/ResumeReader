@@ -22,15 +22,15 @@ const BUCKET = 'awscdk-documentsbucket9ec9deb9-1u4iiltwuvyj4'
 
 app.use(bodyParser.json());
 app.use(cors())
-
+var UPLOADED_FILE_NAME = ''
 const upload = multer({
   storage: multerS3({
     s3: s3,
     acl: 'public-read',
     bucket: 'awscdk-documentsbucket9ec9deb9-1u4iiltwuvyj4',
     key: function (req, file, cb) {
-      console.log(file);
-      cb(null, file.originalname);
+      UPLOADED_FILE_NAME = Date.now() + '-' + file.originalname;
+      cb(null, UPLOADED_FILE_NAME);
     }
   })
 }).array('file');
@@ -46,8 +46,9 @@ app.post('/upload', function (req, res) {
       return res.status(500).json(err)
       // An unknown error occurred when uploading.
     }
+    console.log('REQUEST FILE IS', UPLOADED_FILE_NAME)
+    return res.status(200).send(UPLOADED_FILE_NAME)
 
-    return res.status(200).send(req.file)
     // Everything went fine.
   })
 });
@@ -106,8 +107,7 @@ const getSignedUrl = (file) => {
 app.get('/download', async (req, res) => {
   try {
     console.log(`File received is ${req.query['fileName']}`)
-    // let file = req.query['fileName'][0]
-    let file = '1586436464153-shubham_singh_resume1.pdf'
+    let file = req.query['fileName'][0]
     let data = await getResult(file);
     if (!data) {
       console.log('NO DATA FOUND IN DOCUMENTS TABLE Means Data is not uploaded to s3 or there is problem in the infrastructure. Need human validation');
