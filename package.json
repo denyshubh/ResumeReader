@@ -13,6 +13,7 @@
     "express": "^4.17.1",
     "global": "^4.4.0",
     "js-file-download": "^0.4.11",
+    "libreoffice-convert": "^1.0.5",
     "multer": "^1.4.2",
     "multer-s3": "^2.9.0",
     "nodemon": "^2.0.3",
