@@ -107,7 +107,7 @@ const getSignedUrl = (file) => {
 app.get('/download', async (req, res) => {
   try {
     console.log(`File received is ${req.query['fileName']}`)
-    let file = req.query['fileName'][0]
+    let file = req.query['fileName']
     let data = await getResult(file);
     if (!data) {
       console.log('NO DATA FOUND IN DOCUMENTS TABLE Means Data is not uploaded to s3 or there is problem in the infrastructure. Need human validation');
