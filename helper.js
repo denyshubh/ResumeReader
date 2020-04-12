@@ -45,7 +45,16 @@ async function s3Upload(BUCKET, file, s3) {
   }
 }
 
+function getFontDetails(file) {
+  // bash Script to run: strings file | grep /Type/FontDescriptor/FontName
+
+  /* Regex to get Font Name
+  FontName\/[A-Za-z+-]+
+ */
+}
+
 module.exports = {
   convert,
-  s3Upload
+  s3Upload,
+  getFontDetails
 };
