@@ -5,6 +5,8 @@ const aws = require('aws-sdk'); //"^2.2.41"
 const bodyParser = require('body-parser');
 const multerS3 = require('multer-s3');
 const cors = require('cors');
+const { convert, s3Upload } = require('./helper');
+const { promisify } = require('util');
 
 aws.config.getCredentials(function (err) {
   if (err) console.log(err.stack);
@@ -35,8 +37,46 @@ const upload = multer({
   })
 }).array('file');
 
-app.post('/upload', function (req, res) {
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/Resume')
+  },
+  filename: function (req, file, cb) {
+    UPLOADED_FILE_NAME = Date.now() + '-' + file.originalname;
+    cb(null, UPLOADED_FILE_NAME)
+  }
+})
+var serverUpload = multer({ storage: storage }).array('file')
 
+app.post('/uploadlocal', async (req, res) => {
+
+  let load = promisify(serverUpload)
+  try {
+    await load(req, res)
+    let result = await convert(UPLOADED_FILE_NAME)
+    if (result.success) {
+      result = await s3Upload(BUCKET, result.fileName, s3)
+      if (result.success) {
+        let file = result.fileName
+        console.log(`SUCCESSFULLY UPLOADED FILE ${file} TO S#`)
+        return res.status(200).send(file)
+      } else {
+        console.log('File was not successfully uploaded to s3')
+        return res.status(500).json({ success: false, message: 'Network Issue' })
+      }
+    } else {
+      console.log('File was not successfully converted.')
+      return res.status(400).json({ success: false, message: 'file to supported!' })
+    }
+
+  } catch (err) {
+    console.log(err)
+    return res.status(500).json(err)
+  }
+
+});
+
+app.post('/upload', function (req, res) {
   upload(req, res, function (err) {
 
     if (err instanceof multer.MulterError) {
@@ -48,6 +88,7 @@ app.post('/upload', function (req, res) {
     }
     console.log('REQUEST FILE IS', UPLOADED_FILE_NAME)
     return res.status(200).send(UPLOADED_FILE_NAME)
+
 
     // Everything went fine.
   })

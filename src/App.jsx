@@ -23,7 +23,7 @@ class App extends Component {
     //define message container
     let err = []
     // list allow mime type
-    const types = ['application/pdf', 'application/msword', 'text/plain']
+    const types = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
     // loop access array
     for (let x = 0; x < files.length; x++) {
       // compare file type find doesn't matach
@@ -83,7 +83,7 @@ class App extends Component {
       for (let x = 0; x < this.state.selectedFile.length; x++) {
         data.append('file', this.state.selectedFile[x])
       }
-      axios.post("http://localhost:8000/upload", data, {
+      axios.post("http://localhost:8000/uploadlocal", data, {
         onUploadProgress: ProgressEvent => {
           this.setState({
             loaded: (ProgressEvent.loaded / ProgressEvent.total * 100),
