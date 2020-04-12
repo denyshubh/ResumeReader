@@ -4,6 +4,11 @@ import { Progress } from 'reactstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 const FileDownload = require('js-file-download');
+const UPLOAD_URL = {
+  'application/pdf': 'http://localhost:8000/upload',
+  'application/msword': 'http://localhost:8000/uploadlocal',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'http://localhost:8000/uploadlocal'
+}
 class App extends Component {
   constructor(props) {
     super(props);
@@ -37,6 +42,7 @@ class App extends Component {
       toast.error(err[z])
       event.target.value = null
     }
+
     return true;
   }
   maxSelectFile = (event) => {
@@ -67,7 +73,6 @@ class App extends Component {
   }
   onChangeHandler = event => {
     var files = event.target.files
-    console.log(files)
     if (this.maxSelectFile(event) && this.checkMimeType(event) && this.checkFileSize(event)) {
       // if return true allow to setState
       this.setState({
@@ -83,7 +88,8 @@ class App extends Component {
       for (let x = 0; x < this.state.selectedFile.length; x++) {
         data.append('file', this.state.selectedFile[x])
       }
-      axios.post("http://localhost:8000/uploadlocal", data, {
+      let url = UPLOAD_URL[this.state.selectedFile[0].type]
+      axios.post(url, data, {
         onUploadProgress: ProgressEvent => {
           this.setState({
             loaded: (ProgressEvent.loaded / ProgressEvent.total * 100),
@@ -130,7 +136,7 @@ class App extends Component {
           })
             .then(response => { // then print response status
               let data = JSON.stringify(response.data['Entities'])
-              let saveFileName = `${Date.now()}-${file}`
+              let saveFileName = `${file.split('.')[0]}.txt`
               FileDownload(data, saveFileName);
               toast.success('Download Complete!')
             })
@@ -155,7 +161,6 @@ class App extends Component {
 
   render() {
     let { loaded, download, disableUploadButton, disableDownloadButton } = this.state
-    console.log(disableDownloadButton, disableUploadButton, loaded, download)
     return (
       <main className="container">
         <div className="row jumbotron">

@@ -45,8 +45,6 @@ async function s3Upload(BUCKET, file, s3) {
   }
 }
 
-s3Upload()
-
 module.exports = {
   convert,
   s3Upload

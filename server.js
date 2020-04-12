@@ -163,9 +163,7 @@ app.get('/download', async (req, res) => {
       } else {
         let signedURLS = []
         for (let i = 0; i < files.length; i++) {
-          console.log(files[i])
           let file = files[i]['outputType']['S'].split('-');
-          console.log(file)
           switch (file[2]) {
             case 'Text':
               console.log('do something with Text File')
