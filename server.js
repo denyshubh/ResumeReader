@@ -7,6 +7,8 @@ const multerS3 = require('multer-s3');
 const cors = require('cors');
 const { convert, s3Upload } = require('./helper');
 const { promisify } = require('util');
+const cron = require('node-cron');
+const exec = promisify(require('child_process').exec);
 
 aws.config.getCredentials(function (err) {
   if (err) console.log(err.stack);
@@ -201,6 +203,23 @@ app.get('/download', async (req, res) => {
     console.log(err)
     return res.status(500).json({ message: 'Please Upload a File' })
   }
+});
+
+
+// cron shedular to delete files from resume after 1 hour 
+// sec min hour day week month === * * * * * 
+// This cron job will run on 1st minute of every hour
+cron.schedule("1 * * * *", async function () {
+  console.log("---------------------");
+  console.log("Running Cron Job");
+  try {
+    const { stdout, stderr } = await exec('rm public/Resume/*');
+    console.log('stdout:', stdout);
+    console.error('stderr:', stderr);
+  } catch (err) {
+    console.log('No such file exits')
+  }
+  console.log("---------------------");
 });
 
 app.listen(8000, function () {
